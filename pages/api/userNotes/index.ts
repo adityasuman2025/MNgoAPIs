@@ -48,6 +48,26 @@ async function handler(
         });
 
         return send200(res, { userNoteId });
+    } else if (req.method === 'PUT') { // updateUserNote
+        const { userToken, userNoteId } = req.query || {};
+        const { noteDetails } = req.body || {};
+
+        if (!userToken || !userNoteId || !noteDetails || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
+
+        const { title = "", noteContentItems = [] } = noteDetails || {};
+        const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
+
+        await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT", {
+            ...noteDetails,
+            id: userNoteId,
+            title: encryptText(title, encryptionKey),
+            noteContentItems: noteContentItems.map((item: any, idx: number) => ({
+                ...item, id: userNoteId + "_content_" + idx,
+                text: encryptText(item.text, encryptionKey),
+            }))
+        });
+
+        return send200(res, { userNoteId });
     } else if (req.method === 'DELETE') { // deleteUserNote
         const { userToken, userNoteId } = req.query || {};
 
@@ -57,8 +77,7 @@ async function handler(
         await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "DELETE");
 
         return send200(res);
-    }
-    else {
+    } else {
         return send400(res);
     }
 }
