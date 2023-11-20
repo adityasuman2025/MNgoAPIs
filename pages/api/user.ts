@@ -20,7 +20,7 @@ const enableCors = (fn: any) => async (
     const regex = /[a-z0-9-]+\.mngo\.in/; // /[a-z0-9-]+\.mngo\.in/
 
     if (regex.test(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Origin', "*");
     }
 
     res.setHeader('Access-Control-Allow-Credentials', "true")
