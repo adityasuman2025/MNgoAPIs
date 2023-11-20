@@ -2,6 +2,7 @@
     "name": "mngo-apis",
     "version": "0.1.0",
     "private": true,
+    "side-effects": false,
     "scripts": {
         "dev": "next dev",
         "build": "next build",
@@ -9,7 +10,9 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "fs": "^0.0.1-security",
         "mngo-project-tools": "^1.2.72",
+        "multiparty": "^4.2.3",
         "next": "14.0.3",
         "react": "^18",
         "react-dom": "^18"

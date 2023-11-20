@@ -1,7 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import fs from 'fs';
 import {
     FB_API_BASE_URL,
     FB_API_BASE_URL_LC,
+
+    FB_STORAGE_API_BASE_URL,
+
     ENCRYPTION_KEY,
     ENCRYPTION_KEY_LC,
 } from "./constants";
@@ -52,6 +56,15 @@ export async function sendRequestToAPI(baseUrl: string, endpoint: string, method
     return await response.json();
 }
 
+export async function sendRequestToAPIWithFormData(requestAddress: string, formData: any) {
+    const response = await fetch(requestAddress, {
+        method: 'POST',
+        body: formData,
+    });
+
+    return await response.json();
+}
+
 export function send200(res: NextApiResponse, data: { [key: string]: any } = {}) { // success
     return res.status(200).json({ message: "success", data });
 }
@@ -72,6 +85,25 @@ export function getBaseUrl(isLC: boolean = false) {
     return isLC ? FB_API_BASE_URL_LC : FB_API_BASE_URL;
 }
 
+export function getStorageBaseUrl(isLC: boolean = false) {
+    return isLC ? "lc" : FB_STORAGE_API_BASE_URL;
+}
+
 export function getEncryptionKey(isLC: boolean = false) {
     return isLC ? ENCRYPTION_KEY_LC : ENCRYPTION_KEY;
+}
+
+export function convertMultipartyFileToFormData(multipartyFile: any) {
+    if (!multipartyFile) return null;
+
+    const type = multipartyFile.headers['content-type'];
+    const originalFilename = multipartyFile.originalFilename;
+
+    const blob = new Blob([fs.readFileSync(multipartyFile.path)], { type });
+    const file = new File([blob], originalFilename, { type });
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return formData;
 }
