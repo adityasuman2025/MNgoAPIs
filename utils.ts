@@ -97,13 +97,11 @@ export function convertMultipartyFileToFormData(multipartyFile: any) {
     if (!multipartyFile) return null;
 
     const type = multipartyFile.headers['content-type'];
-    const originalFilename = multipartyFile.originalFilename;
 
     const blob = new Blob([fs.readFileSync(multipartyFile.path)], { type });
-    const file = new File([blob], originalFilename, { type });
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', blob);
 
     return formData;
 }
