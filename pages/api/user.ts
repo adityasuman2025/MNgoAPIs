@@ -17,10 +17,10 @@ const enableCors = (fn: any) => async (
     res: NextApiResponse<ResponseData>
 ) => {
     const origin = req.headers.origin || "";
-    const regex = /[a-z0-9-]+\.mngo\.in/; // /[a-z0-9-]+\.mngo\.in/
+    const regex = /https:\/\/[a-z0-9-]+\.mngo\.in/; // /https:\/\/[a-z0-9-]+\.mngo\.in/
 
     if (regex.test(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', "*");
+        res.setHeader('Access-Control-Allow-Origin', origin);
     }
 
     res.setHeader('Access-Control-Allow-Credentials', "true")
