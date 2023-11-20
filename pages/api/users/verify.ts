@@ -22,7 +22,7 @@ async function handler(
                 if (decryptText(response.password, encryptionKey) === password) {
                     const { name, email, username, profileImg } = response || {};
 
-                    return send200(res, { name, email, username, profileImg });
+                    return send200(res, { name, email, username, profileImg, userToken });
                 } else {
                     return send401(res, "wrong password");
                 }

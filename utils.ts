@@ -15,6 +15,7 @@ export function enableCors(func: any) {
 
         const regex = /https:\/\/[a-z0-9-]+\.mngo\.in/; // /https:\/\/[a-z0-9-]+\.mngo\.in/
 
+        console.log("enableCors", origin, regex.test(origin), origin.includes("localhost"));
         if (regex.test(origin) || origin.includes("localhost")) res.setHeader('Access-Control-Allow-Origin', origin);
 
         res.setHeader('Access-Control-Allow-Credentials', "true")

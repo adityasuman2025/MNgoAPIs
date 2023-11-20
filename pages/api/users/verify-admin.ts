@@ -22,7 +22,7 @@ async function handler(
                 if (decryptText(response.password, encryptionKey) === password) {
                     const { name, email, username, profileImg, isAdmin } = response || {};
 
-                    if (isAdmin === true) return send200(res, { name, email, username, profileImg });
+                    if (isAdmin === true) return send200(res, { name, email, username, profileImg, userToken });
                     else return send401(res, "not a admin");
                 } else {
                     return send401(res, "wrong password");
