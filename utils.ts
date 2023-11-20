@@ -17,13 +17,13 @@ export function enableCors(func: any) {
         req: NextApiRequest,
         res: NextApiResponse<{ message: string }>
     ) {
-        const origin = req.headers.origin || req.headers.referer || req.headers.host || "";
+        // const origin = req.headers.origin || req.headers.referer || req.headers.host || "";
 
-        const regex = /https:\/\/[a-z0-9-]+\.mngo\.in/; // /https:\/\/[a-z0-9-]+\.mngo\.in/
+        // const regex = /https:\/\/[a-z0-9-]+\.mngo\.in/; // /https:\/\/[a-z0-9-]+\.mngo\.in/
+        // console.log("enableCors", origin, regex.test(origin), origin.includes("localhost"));
+        // if (regex.test(origin) || origin.includes("localhost")) res.setHeader('Access-Control-Allow-Origin', origin);
 
-        console.log("enableCors", origin, regex.test(origin), origin.includes("localhost"));
-        if (regex.test(origin) || origin.includes("localhost")) res.setHeader('Access-Control-Allow-Origin', origin);
-
+        res.setHeader('Access-Control-Allow-Origin', "*");
         res.setHeader('Access-Control-Allow-Credentials', "true")
         res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT')
         res.setHeader(
