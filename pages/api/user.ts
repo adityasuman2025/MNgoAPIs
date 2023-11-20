@@ -1,10 +1,32 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+const enableCors = (fn: any) => async (
+    req: NextApiRequest,
+    res: NextApiResponse<ResponseData>
+) => {
+    //@ts-ignore
+    res.setHeader('Access-Control-Allow-Credentials', true)
+    res.setHeader('Access-Control-Allow-Origin', '*') // replace this your actual origin
+    res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT')
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+    )
+
+    // specific logic for the preflight request
+    if (req.method === 'OPTIONS') {
+        res.status(200).end()
+        return
+    }
+
+    return await fn(req, res)
+}
+
 type ResponseData = {
     message: string
 }
 
-export default function handler(
+function handler(
     req: NextApiRequest,
     res: NextApiResponse<ResponseData>
 ) {
@@ -58,3 +80,5 @@ export default function handler(
     //   return res.status(204).json({});
     // }
 }
+
+export default enableCors(handler);
