@@ -7,6 +7,12 @@ import {
 } from "./constants";
 
 export function enableCors(func: any) {
+    /*
+        fetch("https://apis.mngo.in/api/users/details?userToken=89d65908212e472339a372bdc2e380e0")
+        .then(res => res.json())
+        .then(resp => console.log(resp))
+    */
+
     return async function (
         req: NextApiRequest,
         res: NextApiResponse<{ message: string }>
