@@ -13,7 +13,7 @@ async function handler(
             const baseUrl = getBaseUrl(Boolean(lc));
             const encryptionKey = getEncryptionKey(Boolean(lc));
 
-            if (!userToken || !passcode || !encryptionKey || !baseUrl) return send400(res);
+            if (!userToken || !passcode || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
             const response = await sendRequestToAPI(baseUrl, `/${usersRef}/${userToken}.json`) || {};
             if (decryptText(response.passcode, encryptionKey) === passcode) {

@@ -13,7 +13,7 @@ async function handler(
             const baseUrl = getBaseUrl(Boolean(lc));
             const encryptionKey = getEncryptionKey(Boolean(lc));
 
-            if (!username || !password || !encryptionKey || !baseUrl) return send400(res);
+            if (!username || !password || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
             const userToken = md5Hash(username + encryptionKey);
             const response = await sendRequestToAPI(baseUrl, `/${usersRef}/${userToken}.json`) || {};
