@@ -16,7 +16,7 @@ const enableCors = (fn: any) => async (
     req: NextApiRequest,
     res: NextApiResponse<ResponseData>
 ) => {
-    const origin = req.headers.host || "";
+    const origin = req.headers.origin || "";
     const regex = /[a-z0-9-]+\.mngo\.in/; // /[a-z0-9-]+\.mngo\.in/
 
     if (regex.test(origin)) {
