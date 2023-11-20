@@ -33,6 +33,21 @@ async function handler(
         } catch (e) {
             return send500(res);
         }
+    } else if (req.method === 'POST') { // createUserNote
+        const { userToken } = req.query || {};
+
+        const userNoteId = md5Hash(userToken + "_note_" + (new Date().getTime()) + "_" + encryptionKey);
+
+        if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
+
+        const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
+        await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT", {
+            title: "", type: 1, id: userNoteId,
+            ts: new Date().getTime(),
+            noteContentItems: [{ text: "" }]
+        });
+
+        return send200(res, { userNoteId });
     } else if (req.method === 'DELETE') { // deleteUserNote
         const { userToken, userNoteId } = req.query || {};
 
