@@ -1,12 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+/*
+
+fetch("https://apis.mngo.in/api/user")
+.then(resp => resp.json())
+.then(json => console.log(json))
+
+fetch("http://localhost:3000/api/user")
+.then(resp => resp.json())
+.then(json => console.log(json))
+
+*/
+
 const enableCors = (fn: any) => async (
     req: NextApiRequest,
     res: NextApiResponse<ResponseData>
 ) => {
-    //@ts-ignore
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    res.setHeader('Access-Control-Allow-Origin', '*') // replace this your actual origin
+    const origin = req.headers.host || "";
+    const regex = /[a-z0-9-]+\.mngo\.in/; // /[a-z0-9-]+\.mngo\.in/
+
+    if (regex.test(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+
+    res.setHeader('Access-Control-Allow-Credentials', "true")
     res.setHeader('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT')
     res.setHeader(
         'Access-Control-Allow-Headers',
@@ -46,7 +63,7 @@ function handler(
     // }
 
     if (req.method === 'GET') {
-        res.status(200).json({ message: 'Hello from Next.js!' })
+        res.status(200).json({ message: req.headers.host || "" })
     }
 
     // if (req.method === 'POST') {
