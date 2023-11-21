@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import multiparty from 'multiparty';
 import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
-import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData } from '../../../utils';
+import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData, getFirebaseStorageFileUrl } from '../../../utils';
 
 export const config = {
     api: { bodyParser: false } // Disable automatic body parsing 
@@ -16,7 +16,7 @@ async function handler(
             const { location = "", fileName } = req.query || {};
             const baseUrl = getStorageBaseUrl();
 
-            if (!location || !fileName || !baseUrl) return send400(res, "missing parameters");
+            if (!fileName || !baseUrl) return send400(res, "missing parameters");
 
             const form = new multiparty.Form();
             form.parse(req, async function (err: any, fields: any, files: any) {
@@ -27,8 +27,8 @@ async function handler(
                     const formData = convertMultipartyFileToFormData(uploadedFile);
                     if (!uploadedFile || !formData) return send400(res, "missing parameters");
 
-                    const firebaseLocationEndPoint = String(location).replace(/\//g, "%2F");
-                    const fileUrl = `${baseUrl}/${firebaseLocationEndPoint}%2F${fileName}`;
+                    const fileUrl = getFirebaseStorageFileUrl(baseUrl, String(location), String(fileName));
+
                     const response = await sendRequestToAPIWithFormData(
                         fileUrl + "?uploadType=media", formData,
                         { throwNotOkError: false }

@@ -5,6 +5,7 @@ import {
     FB_API_BASE_URL_LC,
 
     FB_STORAGE_API_BASE_URL,
+    FB_STORAGE_API_BASE_URL_DOC,
 
     ENCRYPTION_KEY,
     ENCRYPTION_KEY_LC,
@@ -64,8 +65,13 @@ export function getBaseUrl(isLC: boolean = false) {
     return isLC ? FB_API_BASE_URL_LC : FB_API_BASE_URL;
 }
 
-export function getStorageBaseUrl(isLC: boolean = false) {
-    return isLC ? "lc" : FB_STORAGE_API_BASE_URL;
+export function getStorageBaseUrl(options: { [key: string]: any } = {}) {
+    const { isLC = false, isDocument = false } = options || {};
+
+    if (isLC === true) return "lc"
+    if (isDocument === true) return FB_STORAGE_API_BASE_URL_DOC;
+
+    return FB_STORAGE_API_BASE_URL;
 }
 
 export function getEncryptionKey(isLC: boolean = false) {
@@ -83,4 +89,11 @@ export function convertMultipartyFileToFormData(multipartyFile: any) {
     formData.append('file', blob);
 
     return formData;
+}
+
+export function getFirebaseStorageFileUrl(baseUrl: string, location: string, fileName: string) {
+    const firebaseLocationEndPoint = location ? location.replace(/\//g, "%2F") + "%2F" : "";
+    const fileUrl = `${baseUrl}/${firebaseLocationEndPoint}${fileName === "all" ? "" : fileName}`; // if fileName is all then returning all files in the location
+
+    return fileUrl;
 }
