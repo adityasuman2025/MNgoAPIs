@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { md5Hash, decryptText } from 'mngo-project-tools/encryptionUtil';
-import { enableCors, sendRequestToAPI, send200, send400, send401, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
+import { sendRequestToAPI } from "mngo-project-tools/utils";
+import { enableCors, send200, send400, send401, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
 import { FB_USERS_REF as usersRef } from '../../../constants';
 
 async function handler(
@@ -16,7 +17,10 @@ async function handler(
             if (!username || !password || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
             const userToken = md5Hash(username + encryptionKey);
-            const response = await sendRequestToAPI(baseUrl, `/${usersRef}/${userToken}.json`) || {};
+            const response = await sendRequestToAPI(
+                baseUrl, `/${usersRef}/${userToken}.json`, "GET", {},
+                { throwNotOkError: false }
+            ) || {};
 
             if (Object.keys(response).length) {
                 if (decryptText(response.password, encryptionKey) === password) {

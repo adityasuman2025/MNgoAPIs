@@ -1,5 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { enableCors, sendRequestToAPI, send200, send400, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { sendRequestToAPI } from "mngo-project-tools/utils";
+import { enableCors, send200, send400, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
 import { FB_USERS_REF as usersRef } from '../../../constants';
 
 async function handler(
@@ -14,7 +15,10 @@ async function handler(
 
             if (!userToken || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
-            const response = await sendRequestToAPI(baseUrl, `/${usersRef}/${userToken}.json`) || {};
+            const response = await sendRequestToAPI(
+                baseUrl, `/${usersRef}/${userToken}.json`, "GET", {},
+                { throwNotOkError: false }
+            ) || {};
 
             if (Object.keys(response).length) {
                 const { name, email, username, profileImg } = response || {};

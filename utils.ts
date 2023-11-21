@@ -44,27 +44,6 @@ export function enableCors(func: any) {
     }
 }
 
-export async function sendRequestToAPI(baseUrl: string, endpoint: string, method: string = "get", body?: { [key: string]: any }) {
-    const requestAddress = baseUrl + endpoint;
-    const response = await fetch(requestAddress, {
-        method,
-        ...(method.toLowerCase() === "get" ? {} : {
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body || {})
-        })
-    });
-    return await response.json();
-}
-
-export async function sendRequestToAPIWithFormData(requestAddress: string, formData: any) {
-    const response = await fetch(requestAddress, {
-        method: 'POST',
-        body: formData,
-    });
-
-    return await response.json();
-}
-
 export function send200(res: NextApiResponse, data: { [key: string]: any } = {}) { // success
     return res.status(200).json({ message: "success", data });
 }

@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { md5Hash, decryptText, encryptText } from 'mngo-project-tools/encryptionUtil';
-import { enableCors, sendRequestToAPI, send200, send400, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
+import { sendRequestToAPI } from "mngo-project-tools/utils";
+import { enableCors, send200, send400, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
 import { FB_USER_NOTES_REF as usersNotesRef } from '../../../constants';
 
 async function handler(
@@ -17,7 +18,10 @@ async function handler(
             if (!userToken || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
             const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
-            const response: { [key: string]: any } = await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}.json`) || {};
+            const response: { [key: string]: any } = await sendRequestToAPI(
+                baseUrl, `/${usersNotesRef}/${userNotesToken}.json`, "GET", {},
+                { throwNotOkError: false }
+            ) || {};
 
             const data: { [key: string]: any } = {
                 notesList: Object.values(response)
@@ -41,11 +45,15 @@ async function handler(
         if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
         const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
-        await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT", {
-            title: "", type: 1, id: userNoteId,
-            ts: new Date().getTime(),
-            noteContentItems: [{ text: "" }]
-        });
+        await sendRequestToAPI(
+            baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT",
+            {
+                title: "", type: 1, id: userNoteId,
+                ts: new Date().getTime(),
+                noteContentItems: [{ text: "" }]
+            },
+            { throwNotOkError: false }
+        );
 
         return send200(res, { userNoteId });
     } else if (req.method === 'PUT') { // updateUserNote
@@ -57,15 +65,19 @@ async function handler(
         const { title = "", noteContentItems = [] } = noteDetails || {};
         const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
 
-        await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT", {
-            ...noteDetails,
-            id: userNoteId,
-            title: encryptText(title, encryptionKey),
-            noteContentItems: noteContentItems.map((item: any, idx: number) => ({
-                ...item, id: userNoteId + "_content_" + idx,
-                text: encryptText(item.text, encryptionKey),
-            }))
-        });
+        await sendRequestToAPI(
+            baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT",
+            {
+                ...noteDetails,
+                id: userNoteId,
+                title: encryptText(title, encryptionKey),
+                noteContentItems: noteContentItems.map((item: any, idx: number) => ({
+                    ...item, id: userNoteId + "_content_" + idx,
+                    text: encryptText(item.text, encryptionKey),
+                }))
+            },
+            { throwNotOkError: false }
+        );
 
         return send200(res, { userNoteId });
     } else if (req.method === 'DELETE') { // deleteUserNote
@@ -74,7 +86,10 @@ async function handler(
         if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
 
         const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
-        await sendRequestToAPI(baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "DELETE");
+        await sendRequestToAPI(
+            baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "DELETE", {},
+            { throwNotOkError: false }
+        );
 
         return send200(res);
     } else {

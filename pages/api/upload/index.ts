@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import multiparty from 'multiparty';
-import { enableCors, sendRequestToAPIWithFormData, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData } from '../../../utils';
+import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
+import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData } from '../../../utils';
 
 export const config = {
     api: { bodyParser: false } // Disable automatic body parsing 
@@ -28,7 +29,10 @@ async function handler(
 
                     const firebaseLocationEndPoint = String(location).replace(/\//g, "%2F");
                     const fileUrl = `${baseUrl}/${firebaseLocationEndPoint}%2F${fileName}`;
-                    const response = await sendRequestToAPIWithFormData(fileUrl + "?uploadType=media", formData) || {};
+                    const response = await sendRequestToAPIWithFormData(
+                        fileUrl + "?uploadType=media", formData,
+                        { throwNotOkError: false }
+                    ) || {};
 
                     if (response.size) return send200(res, { fileUrl: fileUrl + "?alt=media" });
                     else return send500(res, response?.error?.message);

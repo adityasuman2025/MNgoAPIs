@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "fs": "^0.0.1-security",
-        "mngo-project-tools": "^1.2.72",
+        "mngo-project-tools": "^1.2.87",
         "multiparty": "^4.2.3",
         "next": "14.0.3",
         "react": "^18",
