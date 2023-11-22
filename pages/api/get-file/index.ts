@@ -8,15 +8,18 @@ export const config = {
 
 // https://firebasestorage.googleapis.com/v0/b/mngo-aditya.appspot.com/o/quiz%2Fquiz.json?alt=media&token=be695454-dd18-4948-8681-a064c2c9d8b5
 // http://localhost:3000/api/get-file?location=quiz&fileName=quiz.json
+// https://apis.mngo.in/api/get-file?location=quiz&fileName=quiz.json
 
 // https://firebasestorage.googleapis.com/v0/b/documents-b4b54.appspot.com/o/aditya_suman_sde2_iitp.pdf?alt=media
 // http://localhost:3000/api/get-file?location=&fileName=aditya_suman_sde2_iitp.pdf&isDocument=true
 
 // https://firebasestorage.googleapis.com/v0/b/documents-b4b54.appspot.com/o/Achievement%2FLOR%20-%20Dr.%20Mayank%20Agrawal.pdf?alt=media
 // http://localhost:3000/api/get-file?location=Achievement&fileName=LOR - Dr. Mayank Agrawal.pdf&isDocument=true
+// https://apis.mngo.in/api/get-file?location=Achievement&fileName=LOR - Dr. Mayank Agrawal.pdf&isDocument=true
 
 // https://firebasestorage.googleapis.com/v0/b/documents-b4b54.appspot.com/o
 // http://localhost:3000/api/get-file?location=&fileName=all&isDocument=true
+// https://apis.mngo.in/api/get-file?location=&fileName=all&isDocument=true
 
 async function handler(
     req: NextApiRequest,
