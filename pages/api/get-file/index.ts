@@ -1,25 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fetch from 'node-fetch';
 import { enableCors, send400, send500, getStorageBaseUrl, getFirebaseStorageFileUrl } from '../../../utils';
+import { FB_GET_MEDIA_QUERY } from '../../../constants';
 
 export const config = {
     api: { bodyParser: false } // Disable automatic body parsing 
 };
-
-// https://firebasestorage.googleapis.com/v0/b/mngo-aditya.appspot.com/o/quiz%2Fquiz.json?alt=media&token=be695454-dd18-4948-8681-a064c2c9d8b5
-// http://localhost:3000/api/get-file?location=quiz&fileName=quiz.json
-// https://apis.mngo.in/api/get-file?location=quiz&fileName=quiz.json
-
-// https://firebasestorage.googleapis.com/v0/b/documents-b4b54.appspot.com/o/aditya_suman_sde2_iitp.pdf?alt=media
-// http://localhost:3000/api/get-file?location=&fileName=aditya_suman_sde2_iitp.pdf&isDocument=true
-
-// https://firebasestorage.googleapis.com/v0/b/documents-b4b54.appspot.com/o/Achievement%2FLOR%20-%20Dr.%20Mayank%20Agrawal.pdf?alt=media
-// http://localhost:3000/api/get-file?location=Achievement&fileName=LOR - Dr. Mayank Agrawal.pdf&isDocument=true
-// https://apis.mngo.in/api/get-file?location=Achievement&fileName=LOR - Dr. Mayank Agrawal.pdf&isDocument=true
-
-// https://firebasestorage.googleapis.com/v0/b/documents-b4b54.appspot.com/o
-// http://localhost:3000/api/get-file?location=&fileName=all&isDocument=true
-// https://apis.mngo.in/api/get-file?location=&fileName=all&isDocument=true
 
 async function handler(
     req: NextApiRequest,
@@ -32,9 +18,9 @@ async function handler(
 
             if (!fileName || !baseUrl) return send400(res, "missing parameters");
 
-            const fileUrl = getFirebaseStorageFileUrl(baseUrl, String(location), String(fileName));
+            const fileUrl = getFirebaseStorageFileUrl(baseUrl, String(location), String(fileName)) + FB_GET_MEDIA_QUERY;
 
-            const response = await fetch(fileUrl + "?alt=media");
+            const response = await fetch(fileUrl);
 
             if (!response.ok) return res.status(response.status).json({ message: `Error opening file: ${response.statusText}` });
 

@@ -74,6 +74,17 @@ export function getStorageBaseUrl(options: { [key: string]: any } = {}) {
     return FB_STORAGE_API_BASE_URL;
 }
 
+export function getStorageAccessToken(options: { [key: string]: any } = {}) {
+    const { isLC = false, isDocument = false } = options || {};
+
+    const token = "token";
+
+    if (isLC === true) return "lc"
+    if (isDocument === true) return `&token=${token}`;
+
+    return `&token=${token}`;
+}
+
 export function getEncryptionKey(isLC: boolean = false) {
     return isLC ? ENCRYPTION_KEY_LC : ENCRYPTION_KEY;
 }

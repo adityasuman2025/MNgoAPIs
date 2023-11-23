@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import multiparty from 'multiparty';
 import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
 import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData, getFirebaseStorageFileUrl } from '../../../utils';
+import { FB_GET_MEDIA_QUERY, FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 
 export const config = {
     api: { bodyParser: false } // Disable automatic body parsing 
@@ -30,11 +31,11 @@ async function handler(
                     const fileUrl = getFirebaseStorageFileUrl(baseUrl, String(location), String(fileName));
 
                     const response = await sendRequestToAPIWithFormData(
-                        fileUrl + "?uploadType=media", formData,
+                        fileUrl + FB_UPLOAD_MEDIA_QUERY, formData,
                         { throwNotOkError: false }
                     ) || {};
 
-                    if (response.size) return send200(res, { fileUrl: fileUrl + "?alt=media" });
+                    if (response.size) return send200(res, { fileUrl: fileUrl + FB_GET_MEDIA_QUERY });
                     else return send500(res, response?.error?.message);
                 } catch (e: any) {
                     return send500(res, e.message);

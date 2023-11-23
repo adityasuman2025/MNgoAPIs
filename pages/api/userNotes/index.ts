@@ -11,8 +11,8 @@ async function handler(
     const baseUrl = getBaseUrl();
     const encryptionKey = getEncryptionKey();
 
-    if (req.method === 'GET') { // getUserNotes
-        try {
+    try {
+        if (req.method === 'GET') { // getUserNotes
             const { userToken } = req.query || {};
 
             if (!userToken || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
@@ -34,66 +34,66 @@ async function handler(
             };
 
             return send200(res, data);
-        } catch (e) {
-            return send500(res);
+        } else if (req.method === 'POST') { // createUserNote
+            const { userToken } = req.query || {};
+
+            const userNoteId = md5Hash(userToken + "_note_" + (new Date().getTime()) + "_" + encryptionKey);
+
+            if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
+
+            const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
+            await sendRequestToAPI(
+                baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT",
+                {
+                    title: "", type: 1, id: userNoteId,
+                    ts: new Date().getTime(),
+                    noteContentItems: [{ text: "" }]
+                },
+                { throwNotOkError: false }
+            );
+
+            return send200(res, { userNoteId });
+        } else if (req.method === 'PUT') { // updateUserNote
+            const { userToken, userNoteId } = req.query || {};
+            const { noteDetails } = req.body || {};
+
+            if (!userToken || !userNoteId || !noteDetails || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
+
+            const { title = "", noteContentItems = [] } = noteDetails || {};
+            const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
+
+            await sendRequestToAPI(
+                baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT",
+                {
+                    ...noteDetails,
+                    id: userNoteId,
+                    title: encryptText(title, encryptionKey),
+                    noteContentItems: noteContentItems.map((item: any, idx: number) => ({
+                        ...item, id: userNoteId + "_content_" + idx,
+                        text: encryptText(item.text, encryptionKey),
+                    }))
+                },
+                { throwNotOkError: false }
+            );
+
+            return send200(res, { userNoteId });
+        } else if (req.method === 'DELETE') { // deleteUserNote
+            const { userToken, userNoteId } = req.query || {};
+
+            if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
+
+            const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
+            await sendRequestToAPI(
+                baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "DELETE", {},
+                { throwNotOkError: false }
+            );
+
+            return send200(res);
+        } else {
+            return send400(res);
         }
-    } else if (req.method === 'POST') { // createUserNote
-        const { userToken } = req.query || {};
-
-        const userNoteId = md5Hash(userToken + "_note_" + (new Date().getTime()) + "_" + encryptionKey);
-
-        if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
-
-        const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
-        await sendRequestToAPI(
-            baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT",
-            {
-                title: "", type: 1, id: userNoteId,
-                ts: new Date().getTime(),
-                noteContentItems: [{ text: "" }]
-            },
-            { throwNotOkError: false }
-        );
-
-        return send200(res, { userNoteId });
-    } else if (req.method === 'PUT') { // updateUserNote
-        const { userToken, userNoteId } = req.query || {};
-        const { noteDetails } = req.body || {};
-
-        if (!userToken || !userNoteId || !noteDetails || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
-
-        const { title = "", noteContentItems = [] } = noteDetails || {};
-        const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
-
-        await sendRequestToAPI(
-            baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "PUT",
-            {
-                ...noteDetails,
-                id: userNoteId,
-                title: encryptText(title, encryptionKey),
-                noteContentItems: noteContentItems.map((item: any, idx: number) => ({
-                    ...item, id: userNoteId + "_content_" + idx,
-                    text: encryptText(item.text, encryptionKey),
-                }))
-            },
-            { throwNotOkError: false }
-        );
-
-        return send200(res, { userNoteId });
-    } else if (req.method === 'DELETE') { // deleteUserNote
-        const { userToken, userNoteId } = req.query || {};
-
-        if (!userToken || !userNoteId || !encryptionKey || !baseUrl) return send400(res, "missing parameters");
-
-        const userNotesToken = md5Hash(userToken + "_notes_" + encryptionKey);
-        await sendRequestToAPI(
-            baseUrl, `/${usersNotesRef}/${userNotesToken}/${userNoteId}.json`, "DELETE", {},
-            { throwNotOkError: false }
-        );
-
-        return send200(res);
-    } else {
-        return send400(res);
+    } catch (e) {
+        return send500(res);
     }
 }
 
