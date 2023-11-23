@@ -28,14 +28,18 @@ async function handler(
                     const formData = convertMultipartyFileToFormData(uploadedFile);
                     if (!uploadedFile || !formData) return send400(res, "missing parameters");
 
-                    const fileUrl = getFirebaseStorageFileUrl(baseUrl, String(location), String(fileName));
+                    const uploadUrl = getFirebaseStorageFileUrl(baseUrl, String(location), String(fileName));
 
                     const response = await sendRequestToAPIWithFormData(
-                        fileUrl + FB_UPLOAD_MEDIA_QUERY, formData,
+                        uploadUrl + FB_UPLOAD_MEDIA_QUERY, formData,
                         { throwNotOkError: false }
                     ) || {};
 
-                    if (response.size) return send200(res, { fileUrl: fileUrl + FB_GET_MEDIA_QUERY });
+                    if (response.size) {
+                        const host = req.headers.host || "";
+                        const fileUrl = `http://${host}/api/get-file?location=${String(location)}&fileName=${String(fileName)}`;
+                        return send200(res, { fileUrl });
+                    }
                     else return send500(res, response?.error?.message);
                 } catch (e: any) {
                     return send500(res, e.message);
