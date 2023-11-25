@@ -8,16 +8,17 @@ import { FB_GET_MEDIA_QUERY, FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 
 export const config = { api: { bodyParser: false } }; // Disable automatic body parsing
 
-// temp folder is used to upload the file temporarily in the server
-const tempDir = path.join(__dirname, 'temp');
-if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-
 async function handler(
     req: NextApiRequest,
     res: NextApiResponse<{ message: string }>
 ) {
     if (req.method === 'POST') {
         try {
+            // temp folder is used to upload the file temporarily in the server
+            const tempDir = path.join(__dirname, 'temp');
+            if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+
+
             const { location = "", fileName, isChunk = false } = req.query || {};
             const baseUrl = getStorageBaseUrl();
 
