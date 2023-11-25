@@ -37,7 +37,7 @@ async function handler(
 
                     if (response.size) {
                         const host = req.headers.host || "";
-                        const fileUrl = `http://${host}/api/get-file?location=${String(location)}&fileName=${String(fileName)}`;
+                        const fileUrl = `https://${host}/api/get-file?location=${String(location)}&fileName=${String(fileName)}`;
                         return send200(res, { fileUrl });
                     }
                     else return send500(res, response?.error?.message);
