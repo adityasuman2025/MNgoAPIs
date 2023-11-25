@@ -28,7 +28,7 @@ async function handler(
 
                     if (Boolean(isChunk) === true) { // uploading in chunks
                         // temp folder is used to upload the file temporarily in the server
-                        const tempDir = path.join(__dirname, 'temp');
+                        const tempDir = path.join('/tmp');
                         if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
                         // temp folder is used to upload the file temporarily in the server
 
