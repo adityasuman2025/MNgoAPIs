@@ -14,11 +14,6 @@ async function handler(
 ) {
     if (req.method === 'POST') {
         try {
-            // temp folder is used to upload the file temporarily in the server
-            const tempDir = path.join(__dirname, 'temp');
-            if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-
-
             const { location = "", fileName, isChunk = false } = req.query || {};
             const baseUrl = getStorageBaseUrl();
 
@@ -28,6 +23,12 @@ async function handler(
             form.parse(req, async function (err: any, fields: any, files: any) {
                 try {
                     if (err) return send500(res, 'Error parsing file');
+
+                    // temp folder is used to upload the file temporarily in the server
+                    const tempDir = path.join(__dirname, 'temp');
+                    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+                    // temp folder is used to upload the file temporarily in the server
+
 
                     const uploadedFile = files.file[0];
 
