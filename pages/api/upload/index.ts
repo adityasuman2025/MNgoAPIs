@@ -4,9 +4,14 @@ import fs from 'fs';
 import path from 'path';
 import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
 import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData, getFirebaseStorageFileUrl } from '../../../utils';
-import { FB_GET_MEDIA_QUERY, FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
+import { FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 
 export const config = { api: { bodyParser: false } }; // Disable automatic body parsing
+
+// /tmp folder is used to upload the file temporarily in the server
+const tempDir = path.join('/tmp');
+if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+
 
 async function handler(
     req: NextApiRequest,
@@ -27,12 +32,6 @@ async function handler(
                     const uploadedFile = files.file[0];
 
                     if (Boolean(isChunk) === true) { // uploading in chunks
-                        // temp folder is used to upload the file temporarily in the server
-                        const tempDir = path.join('/tmp');
-                        if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-                        // temp folder is used to upload the file temporarily in the server
-
-
                         const { type, isLast = false } = fields;
 
                         const combinedFilePath = path.join(tempDir, String(fileName));
