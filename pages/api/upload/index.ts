@@ -24,15 +24,15 @@ async function handler(
                 try {
                     if (err) return send500(res, 'Error parsing file');
 
-                    // temp folder is used to upload the file temporarily in the server
-                    const tempDir = path.join(__dirname, 'temp');
-                    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
-                    // temp folder is used to upload the file temporarily in the server
-
-
                     const uploadedFile = files.file[0];
 
                     if (Boolean(isChunk) === true) { // uploading in chunks
+                        // temp folder is used to upload the file temporarily in the server
+                        const tempDir = path.join(__dirname, 'temp');
+                        if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+                        // temp folder is used to upload the file temporarily in the server
+
+
                         const { type, isLast = false } = fields;
 
                         const combinedFilePath = path.join(tempDir, String(fileName));
