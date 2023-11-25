@@ -26,9 +26,11 @@ async function handler(
 
             const { headers } = response || {};
             const type: string = headers.get('content-type') || 'text/plain';
+            const length: string = headers.get('content-length') || 'text/plain';
 
             if (response.body) {
                 res.setHeader('Content-Type', type);
+                res.setHeader('Content-Length', length); // content-length header is required to send a long file or a video 
                 response.body.pipe(res);
             } else {
                 return send400(res, "Error opening file");
