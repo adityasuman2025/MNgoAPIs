@@ -16,6 +16,8 @@
         "next": "14.0.3",
         "node-fetch": "^3.3.2",
         "path": "^0.12.7",
+        "pump": "^3.0.0",
+        "range-parser": "^1.2.1",
         "react": "^18",
         "react-dom": "^18"
     },
