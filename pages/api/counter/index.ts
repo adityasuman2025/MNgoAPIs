@@ -15,7 +15,6 @@ async function handler(
             if (!appName || !baseUrl || !location) return send400(res, "missing parameters");
 
             const tempDir = path.join('public/counter');
-            if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
             const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
 
             let numberOfLines = 0;
