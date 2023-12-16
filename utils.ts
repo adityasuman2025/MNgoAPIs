@@ -108,3 +108,20 @@ export function getFirebaseStorageFileUrl(baseUrl: string, location: string, fil
 
     return fileUrl;
 }
+
+export function formatDateToDDMMYYYYHHMMLocal(date: Date | string) {
+    if (!date) return "";
+    if (typeof date === "string") date = new Date(date);
+
+    const day = ('0' + date.getDate()).slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based
+    const year = date.getFullYear();
+
+    const hours = date.getHours();
+    const minutes = ('0' + date.getMinutes()).slice(-2);
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+
+    return `${day}/${month}/${year} ${formattedHours}:${minutes}${ampm}`;
+}
