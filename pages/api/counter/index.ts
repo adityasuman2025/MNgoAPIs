@@ -7,14 +7,15 @@ async function handler(
     req: NextApiRequest,
     res: NextApiResponse<{ message: string }>
 ) {
-    if (req.method === 'GET') {
+    if (req.method === 'POST') {
         try {
-            const { appName = "", location } = req.query || {};
+            const { appName = "", location } = req.body || {};
             const baseUrl = getStorageBaseUrl();
 
             if (!appName || !baseUrl || !location) return send400(res, "missing parameters");
 
-            const tempDir = path.join('public/counter');
+            const tempDir = path.join(process.cwd(), 'public/counter'); // path.join('public/counter');
+            console.log("tempDir", tempDir);
             const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
 
             let numberOfLines = 0;
@@ -39,6 +40,8 @@ async function handler(
         } catch (e: any) {
             return send500(res, e.message);
         }
+    } else if (req.method === 'GET') {
+        return send200(res, { message: "counter api" });
     } else {
         return send400(res);
     }
