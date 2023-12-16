@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs';
-import path from 'path';
-import { enableCors, send200, send400, send500, formatDateToDDMMYYYYHHMMLocal } from '../../../utils';
+import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
+import { enableCors, send200, send400, send500, getStorageBaseUrl, getFirebaseStorageFileUrl, formatDateToDDMMYYYYHHMMLocal } from '../../../utils';
+import { FB_GET_MEDIA_QUERY, FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 
-const tempDir = path.join('/tmp/counter');
+/*
+    we used firebase for stroage because vercel does not support uploading to the local server instead of /tmp folder which is not persistent
+    as /tmp folder is cleared after each deployment
+*/
 
 async function handler(
     req: NextApiRequest,
@@ -13,30 +16,34 @@ async function handler(
         try {
             const { appName = "", location } = req.body || {};
 
-            if (!appName || !location) return send400(res, "missing parameters");
+            const baseUrl = getStorageBaseUrl();
 
-            if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-            const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
+            if (!appName || !location || !baseUrl) return send400(res, "missing parameters");
 
-            let numberOfLines = 0;
-            try {
-                const oldData = fs.readFileSync(combinedFilePath, 'utf-8') || "";
-                numberOfLines = oldData.split('\n').length;
-            } catch { }
+            const firebaseFileUrl = getFirebaseStorageFileUrl(baseUrl, "counter", String(appName) + ".txt");
 
-            let lineToAppend = "";
-            if (numberOfLines === 0) {
-                const headerLine = "count \t datetime \t location \t user-agent";
-                lineToAppend = headerLine + `\n${numberOfLines + 1} \t ${formatDateToDDMMYYYYHHMMLocal(new Date())} \t ${location} \t ${req.headers?.["user-agent"]}`;
-            } else {
-                lineToAppend = `\n${numberOfLines} \t ${formatDateToDDMMYYYYHHMMLocal(new Date())} \t ${location} \t ${req.headers?.["user-agent"]}`;
-            }
+            // getting the counter file from firebase storage
+            const response: any = await fetch(firebaseFileUrl + FB_GET_MEDIA_QUERY) || {};
 
-            fs.appendFile(combinedFilePath, lineToAppend, (err) => {
-                if (err) return send500(res, err.message);
+            const oldCounterData = response.ok ? await response.text() : "";
+            const numberOfLines = oldCounterData.split('\n').length;
 
-                return send200(res);
-            });
+            // appending new counter data to the firebase storage file
+            const headerLine = "count \t datetime \t location \t user-agent";
+            const lineToAppend = (numberOfLines === 1 ? headerLine : "") + `\n${numberOfLines} \t ${formatDateToDDMMYYYYHHMMLocal(new Date())} \t ${location} \t ${req.headers?.["user-agent"]}`;
+            const newCounterData = oldCounterData + lineToAppend;
+
+            // uploading the updated counter file to firebase storage
+            const blob = new Blob([newCounterData], { type: 'text/plain' });
+            const formData = new FormData();
+            formData.append('file', blob);
+
+            const uploadResp = await sendRequestToAPIWithFormData(firebaseFileUrl + FB_UPLOAD_MEDIA_QUERY,
+                formData, { throwNotOkError: false }
+            ) || {};
+
+            if (uploadResp.size) return send200(res);
+            else return send500(res, uploadResp?.error?.message);
         } catch (e: any) {
             return send500(res, e.message);
         }
@@ -44,12 +51,13 @@ async function handler(
         try {
             const { appName = "" } = req.query || {};
 
-            if (!appName) return send400(res, "missing parameters");
+            const baseUrl = getStorageBaseUrl();
 
-            if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-            const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
+            if (!appName || !baseUrl) return send400(res, "missing parameters");
 
-            const counterData = fs.readFileSync(combinedFilePath, 'utf-8') || "";
+            const firebaseFileUrl = getFirebaseStorageFileUrl(baseUrl, "counter", String(appName) + ".txt");
+            const response: any = await fetch(firebaseFileUrl + FB_GET_MEDIA_QUERY);
+            const counterData = response.ok ? await response.text() : "";
 
             res.setHeader('Content-Type', 'text/plain');
             // @ts-ignore

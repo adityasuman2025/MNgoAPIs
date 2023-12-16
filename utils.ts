@@ -125,3 +125,11 @@ export function formatDateToDDMMYYYYHHMMLocal(date: Date | string) {
 
     return `${day}/${month}/${year} ${formattedHours}:${minutes}${ampm}`;
 }
+
+export function getSelfBaseUrl(req: NextApiRequest) {
+    const host = req.headers.host || "";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const baseUrl = `${protocol}://${host}`;
+
+    return baseUrl;
+}

@@ -3,7 +3,7 @@ import multiparty from 'multiparty';
 import fs from 'fs';
 import path from 'path';
 import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
-import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData, getFirebaseStorageFileUrl } from '../../../utils';
+import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData, getFirebaseStorageFileUrl, getSelfBaseUrl } from '../../../utils';
 import { FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 
 export const config = { api: { bodyParser: false } }; // Disable automatic body parsing
@@ -58,9 +58,7 @@ async function handler(
                                 if (response.size) {
                                     fs.unlinkSync(combinedFilePath);
 
-                                    const host = req.headers.host || "";
-                                    const protocol = host.includes("localhost") ? "http" : "https";
-                                    const fileUrl = `${protocol}://${host}/api/get-file?location=${String(location)}&fileName=${String(fileName)}`;
+                                    const fileUrl = `${getSelfBaseUrl(req)}/api/get-file?location=${String(location)}&fileName=${String(fileName)}`;
                                     return send200(res, { fileUrl });
                                 } else return send500(res, response?.error?.message);
                             });
