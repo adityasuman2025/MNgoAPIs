@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { enableCors, send200, send400, send500, formatDateToDDMMYYYYHHMMLocal } from '../../../utils';
 
+const tempDir = path.join('/tmp/counter');
+
 async function handler(
     req: NextApiRequest,
     res: NextApiResponse<{ message: string }>
@@ -13,9 +15,7 @@ async function handler(
 
             if (!appName || !location) return send400(res, "missing parameters");
 
-            const tempDir = path.join('/tmp/counter');
             if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-
             const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
 
             let numberOfLines = 0;
@@ -46,13 +46,10 @@ async function handler(
 
             if (!appName) return send400(res, "missing parameters");
 
-            const tempDir = path.join('/tmp/counter');
             if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
             const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
 
             const counterData = fs.readFileSync(combinedFilePath, 'utf-8') || "";
-            console.log("counterData", counterData);
-
 
             res.setHeader('Content-Type', 'text/plain');
             // @ts-ignore
