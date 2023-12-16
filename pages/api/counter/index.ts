@@ -13,10 +13,9 @@ async function handler(
 
             if (!appName || !location) return send400(res, "missing parameters");
 
-            const tempDir = path.join('uploads/counter');
+            const tempDir = path.join('/tmp/counter');
             if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
-            // const tempDir = path.join(process.cwd(), 'public/counter'); // path.join('public/counter');
-            console.log("tempDir", tempDir);
+
             const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
 
             let numberOfLines = 0;
@@ -47,7 +46,7 @@ async function handler(
 
             if (!appName) return send400(res, "missing parameters");
 
-            const tempDir = path.join('uploads/counter');
+            const tempDir = path.join('/tmp/counter');
             if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
             const combinedFilePath = path.join(tempDir, String(appName + ".txt"));
 
