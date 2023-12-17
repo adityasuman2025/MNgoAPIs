@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { md5Hash, decryptText, encryptText } from 'mngo-project-tools/encryptionUtil';
-import { sendRequestToAPI } from "mngo-project-tools/utils";
+import { md5Hash, decryptText, encryptText } from 'mngo-project-tools/encryptionUtils';
+import { sendRequestToAPI } from "mngo-project-tools/apiUtils";
 import { enableCors, send200, send400, send500, getBaseUrl, getEncryptionKey } from '../../../utils';
 import { FB_USER_NOTES_REF as usersNotesRef } from '../../../constants';
 

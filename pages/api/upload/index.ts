@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import multiparty from 'multiparty';
 import fs from 'fs';
 import path from 'path';
-import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
+import { sendRequestToAPIWithFormData } from "mngo-project-tools/apiUtils";
 import { enableCors, send200, send400, send500, getStorageBaseUrl, convertMultipartyFileToFormData, getFirebaseStorageFileUrl, getSelfBaseUrl } from '../../../utils';
 import { FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 

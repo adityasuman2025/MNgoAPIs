@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { sendRequestToAPIWithFormData } from "mngo-project-tools/utils";
+import { sendRequestToAPIWithFormData } from "mngo-project-tools/apiUtils";
 import { enableCors, send200, send400, send500, getStorageBaseUrl, getFirebaseStorageFileUrl, formatDateToDDMMYYYYHHMMLocal } from '../../../utils';
 import { FB_GET_MEDIA_QUERY, FB_UPLOAD_MEDIA_QUERY } from '../../../constants';
 
@@ -14,11 +14,11 @@ async function handler(
 ) {
     if (req.method === 'POST') {
         try {
-            const { appName = "", location } = req.body || {};
+            const { appName = "", location, date, device } = req.body || {};
 
             const baseUrl = getStorageBaseUrl();
 
-            if (!appName || !location || !baseUrl) return send400(res, "missing parameters");
+            if (!appName || !location || !baseUrl || !date || !device) return send400(res, "missing parameters");
 
             const firebaseFileUrl = getFirebaseStorageFileUrl(baseUrl, "counter", String(appName) + ".txt");
 
@@ -30,7 +30,7 @@ async function handler(
 
             // appending new counter data to the firebase storage file
             const headerLine = "count \t datetime \t location \t user-agent";
-            const lineToAppend = (numberOfLines === 1 ? headerLine : "") + `\n${numberOfLines} \t ${formatDateToDDMMYYYYHHMMLocal(new Date())} \t ${location} \t ${req.headers?.["user-agent"]}`;
+            const lineToAppend = (numberOfLines === 1 ? headerLine : "") + `\n${numberOfLines} \t ${date} \t ${location} \t ${device}`;
             const newCounterData = oldCounterData + lineToAppend;
 
             // uploading the updated counter file to firebase storage

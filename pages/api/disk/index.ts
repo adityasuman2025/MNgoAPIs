@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { sendRequestToAPI } from "mngo-project-tools/utils";
+import { sendRequestToAPI } from "mngo-project-tools/apiUtils";
 import { enableCors, send200, send400, send500, getStorageBaseUrl, getFirebaseStorageFileUrl } from '../../../utils';
 import { FB_GET_MEDIA_QUERY } from '../../../constants';
 
